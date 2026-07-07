@@ -11,11 +11,14 @@
 :root { 
   --bg: #0b0c10; 
   --text: #ffffff; 
+  --text-muted: #aaaaaa;
   --accent-1: #ff00ff; 
   --accent-2: #00ffff; 
   --accent-3: #ffff00; 
+  --accent-4: #ff007f;
   --card-bg: rgba(20, 10, 30, 0.95); 
   --card-border: #ff00ff; 
+  --grid-color: rgba(0,255,255,0.3);
 }
 [data-theme="light"] { 
   --bg: #f4f4f4; 
@@ -24,8 +27,10 @@
   --accent-1: #ff007f; 
   --accent-2: #00e5ff; 
   --accent-3: #ffea00; 
+  --accent-4: #9d00ff;
   --card-bg: #ffffff; 
   --card-border: #111111; 
+  --grid-color: rgba(0,0,0,0.1);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { 
@@ -33,8 +38,10 @@ body {
   background-color: var(--bg); 
   color: var(--text); 
   height: 100vh; 
-  overflow-y: hidden; 
-  transition: 0.5s; 
+  overflow-x: hidden; 
+  overflow-y: auto;
+  transition: background 0.5s, color 0.5s;
+  position: relative;
 }
 
 /* --- ANIMATED BACKGROUND SHAPES --- */
@@ -52,19 +59,21 @@ body {
 .floating-shape {
   position: absolute;
   opacity: 0.6;
-  animation: float 8s infinite ease-in-out;
+  animation: float 8s ease-in-out infinite;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-30px) rotate(180deg); }
+  25% { transform: translateY(-20px) rotate(90deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+  75% { transform: translateY(-30px) rotate(270deg); }
 }
 
 .triangle {
   width: 0;
   height: 0;
-  border-left: 30px solid transparent;
-  border-right: 30px solid transparent;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
   border-bottom: 50px solid var(--accent-1);
 }
 
@@ -83,27 +92,63 @@ body {
 }
 
 .zigzag {
-  width: 80px;
-  height: 40px;
+  width: 60px;
+  height: 30px;
   background: repeating-linear-gradient(
     45deg,
-    var(--accent-1),
-    var(--accent-1) 10px,
-    var(--accent-2) 10px,
-    var(--accent-2) 20px
+    var(--accent-4),
+    var(--accent-4) 10px,
+    transparent 10px,
+    transparent 20px
   );
 }
 
 .wave {
-  width: 100px;
-  height: 30px;
+  width: 80px;
+  height: 40px;
   background: linear-gradient(
-    90deg,
-    var(--accent-3),
-    var(--accent-1),
-    var(--accent-2)
+    180deg,
+    transparent 0%,
+    var(--accent-2) 50%,
+    transparent 100%
   );
   border-radius: 50%;
+}
+
+.diamond {
+  width: 50px;
+  height: 50px;
+  background: var(--accent-1);
+  transform: rotate(45deg);
+}
+
+.hexagon {
+  width: 60px;
+  height: 35px;
+  background: var(--accent-3);
+  position: relative;
+}
+.hexagon:before, .hexagon:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+}
+.hexagon:before {
+  bottom: 100%;
+  border-bottom: 17px solid var(--accent-3);
+}
+.hexagon:after {
+  top: 100%;
+  border-top: 17px solid var(--accent-3);
+}
+
+.star {
+  width: 60px;
+  height: 60px;
+  background: var(--accent-4);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
 }
 
 /* --- GRID & HERO --- */
@@ -114,8 +159,8 @@ body {
   width: 200vw; 
   height: 70vh; 
   background-image: 
-    linear-gradient(rgba(0,255,255,0.2) 2px, transparent 2px), 
-    linear-gradient(90deg, rgba(0,255,255,0.2) 2px, transparent 2px); 
+    linear-gradient(var(--grid-color) 2px, transparent 2px), 
+    linear-gradient(90deg, var(--grid-color) 2px, transparent 2px); 
   background-size: 50px 50px; 
   transform: perspective(600px) rotateX(70deg); 
   z-index: -2; 
@@ -125,10 +170,10 @@ body {
 
 @keyframes gridMove {
   0% { background-position: 0 0; }
-  100% { background-position: 0 1000px; }
+  100% { background-position: 0 500px; }
 }
 
-#hero, #ttt-screen, #gate, #access-granted { 
+#hero, #ttt-screen, #gate, #access-granted, #discount-popup { 
   position: fixed; 
   top:0; 
   left:0; 
@@ -143,20 +188,33 @@ body {
   cursor: pointer; 
   transition: 0.5s; 
 }
-#ttt-screen, #gate, #access-granted { display: none; }
+
+#ttt-screen, #gate, #access-granted, #discount-popup { display: none; }
 
 .hero-logo { 
   font-family: 'Press Start 2P'; 
   font-size: 32px; 
-  text-shadow: 0 0 10px var(--accent-1), 0 0 20px var(--accent-2), 0 0 30px var(--accent-3); 
+  text-shadow: 
+    0 0 10px var(--accent-1),
+    0 0 20px var(--accent-2),
+    0 0 30px var(--accent-3);
   margin-bottom: 20px; 
-  text-align: center; 
-  animation: pulse 2s infinite;
+  text-align: center;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
+}
+
+.blink-text {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 /* --- RETRO UI --- */
@@ -167,13 +225,15 @@ body {
   padding: 2rem; 
   background: var(--card-bg); 
   border: 4px solid var(--card-border); 
-  box-shadow: 0 0 20px var(--accent-1), inset 0 0 20px rgba(255,0,255,0.1); 
-  animation: boxGlow 3s infinite alternate;
+  box-shadow: 
+    0 0 20px var(--accent-1),
+    inset 0 0 20px rgba(255,0,255,0.1);
+  animation: boxGlow 3s ease-in-out infinite alternate;
 }
 
 @keyframes boxGlow {
-  from { box-shadow: 0 0 20px var(--accent-1), inset 0 0 20px rgba(255,0,255,0.1); }
-  to { box-shadow: 0 0 40px var(--accent-2), inset 0 0 40px rgba(0,255,255,0.1); }
+  0% { box-shadow: 0 0 20px var(--accent-1), inset 0 0 20px rgba(255,0,255,0.1); }
+  100% { box-shadow: 0 0 40px var(--accent-2), inset 0 0 40px rgba(0,255,255,0.2); }
 }
 
 .retro-btn { 
@@ -185,16 +245,16 @@ body {
   font-size: 8px; 
   cursor: pointer; 
   margin-top: 20px; 
-  text-transform: uppercase; 
-  transition: all 0.3s;
+  text-transform: uppercase;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s;
 }
 
 .retro-btn:hover {
   background: var(--accent-2);
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px var(--accent-2);
+  box-shadow: 0 0 20px var(--accent-2);
 }
 
 .retro-btn::before {
@@ -220,9 +280,14 @@ body {
   gap: 4px; 
   width: 200px; 
   margin: 20px auto; 
-  background: var(--card-border); 
-  padding: 4px;
-  border: 2px solid var(--accent-2);
+  background: var(--card-border);
+  animation: boardRotate 10s linear infinite;
+}
+
+@keyframes boardRotate {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
 }
 
 .ttt-cell { 
@@ -235,32 +300,28 @@ body {
   font-size: 20px; 
   cursor: pointer; 
   color: white;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .ttt-cell:hover {
   background: var(--accent-1);
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
-/* --- ACCESS GRANTED SCREEN --- */
-.access-content {
-  text-align: center;
-  animation: slideIn 0.5s ease-out;
-}
+.ttt-cell.x { color: var(--accent-2); }
+.ttt-cell.o { color: var(--accent-1); }
 
-@keyframes slideIn {
-  from { transform: translateY(-50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
+/* --- ACCESS GRANTED --- */
 .access-title {
   font-family: 'Press Start 2P';
-  font-size: 24px;
+  font-size: 28px;
   color: var(--accent-2);
-  text-shadow: 0 0 10px var(--accent-2), 0 0 20px var(--accent-2);
-  margin-bottom: 20px;
+  text-shadow: 
+    0 0 10px var(--accent-2),
+    0 0 20px var(--accent-2),
+    0 0 30px var(--accent-2);
   animation: flicker 0.1s infinite;
+  margin-bottom: 30px;
 }
 
 @keyframes flicker {
@@ -268,24 +329,16 @@ body {
   50% { opacity: 0.8; }
 }
 
-.access-message {
-  font-family: 'Press Start 2P';
-  font-size: 12px;
-  color: var(--accent-3);
-  margin-bottom: 30px;
-  line-height: 1.8;
-}
-
-.access-enter-btn {
+.enter-btn {
   padding: 15px 30px;
   background: var(--accent-2);
-  border: 3px solid var(--accent-3);
+  border: 3px solid white;
   color: #000;
   font-family: 'Press Start 2P';
   font-size: 10px;
   cursor: pointer;
   text-transform: uppercase;
-  animation: bounce 1s infinite;
+  animation: bounce 1s ease-in-out infinite;
 }
 
 @keyframes bounce {
@@ -298,7 +351,7 @@ body {
   display: none; 
   padding-bottom: 50px; 
   overflow-y: auto; 
-  height: 100vh; 
+  min-height: 100vh; 
 }
 
 .cat-header { 
@@ -314,122 +367,281 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.social-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.instagram-btn {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  border: 2px solid white;
+  color: white;
+  padding: 8px 12px;
+  font-family: 'Press Start 2P';
+  font-size: 7px;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.instagram-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #dc2743;
+}
+
 .cam-grid { 
   display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-  gap: 20px; 
-  padding: 1rem; 
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+  gap: 25px; 
+  padding: 2rem; 
 }
 
 .cam-card { 
   background: var(--card-bg); 
   border: 3px solid var(--card-border); 
-  padding: 10px; 
-  text-align: center; 
-  transition: all 0.3s;
+  padding: 15px; 
+  text-align: center;
   position: relative;
   overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: cardAppear 0.6s ease-out backwards;
 }
 
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cam-card:nth-child(1) { animation-delay: 0.1s; }
+.cam-card:nth-child(2) { animation-delay: 0.2s; }
+.cam-card:nth-child(3) { animation-delay: 0.3s; }
+.cam-card:nth-child(4) { animation-delay: 0.4s; }
+.cam-card:nth-child(5) { animation-delay: 0.5s; }
+.cam-card:nth-child(6) { animation-delay: 0.6s; }
+.cam-card:nth-child(7) { animation-delay: 0.7s; }
+.cam-card:nth-child(8) { animation-delay: 0.8s; }
+.cam-card:nth-child(9) { animation-delay: 0.9s; }
+.cam-card:nth-child(10) { animation-delay: 1.0s; }
+
 .cam-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px var(--accent-1);
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 
+    0 10px 30px var(--accent-1),
+    0 0 20px var(--accent-2);
   border-color: var(--accent-2);
 }
 
 .cam-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  transition: 0.5s;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.5s;
+  opacity: 0;
 }
 
 .cam-card:hover::before {
-  left: 100%;
+  opacity: 1;
+  animation: cardShine 1s;
+}
+
+@keyframes cardShine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
 }
 
 .cam-img { 
   width: 100%; 
-  height: 180px; 
+  height: 200px; 
   object-fit: cover; 
   background: #fff; 
-  border: 2px solid var(--accent-2);
-  transition: transform 0.3s;
+  border: 2px solid var(--card-border);
+  transition: transform 0.4s;
 }
 
 .cam-card:hover .cam-img {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .cam-name {
   font-family: 'Press Start 2P';
-  font-size: 8px;
-  margin: 10px 0;
+  font-size: 10px;
+  margin: 15px 0 10px;
   color: var(--accent-3);
+  text-shadow: 0 0 5px var(--accent-3);
+}
+
+.cam-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-2);
+  margin-bottom: 10px;
 }
 
 .buy-btn { 
   width: 100%; 
-  padding: 10px; 
+  padding: 12px; 
   background: var(--accent-1); 
   border: none; 
   color: #fff; 
   font-family: 'Press Start 2P'; 
   font-size: 8px; 
   cursor: pointer; 
-  margin-top: 10px; 
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
   transition: all 0.3s;
 }
 
 .buy-btn:hover {
-  background: var(--accent-2);
+  background: var(--accent-4);
   transform: scale(1.05);
+  box-shadow: 0 0 20px var(--accent-4);
 }
 
 .theme-toggle-btn { 
   background: var(--bg); 
   color: var(--text); 
-  border: 1px solid var(--accent-3); 
-  padding: 5px 8px; 
+  border: 2px solid var(--accent-3); 
+  padding: 8px 12px; 
   font-family: 'Press Start 2P'; 
   font-size: 7px; 
-  cursor: pointer; 
+  cursor: pointer;
   transition: all 0.3s;
 }
 
 .theme-toggle-btn:hover {
   background: var(--accent-3);
-  color: #000;
+  color: var(--bg);
+  transform: rotate(10deg);
+}
+
+/* --- DISCOUNT POPUP --- */
+.discount-content {
+  background: var(--card-bg);
+  border: 4px solid var(--accent-3);
+  padding: 30px;
+  text-align: center;
+  max-width: 400px;
+  animation: popupIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.discount-badge {
+  font-family: 'Press Start 2P';
+  font-size: 20px;
+  color: var(--accent-3);
+  text-shadow: 0 0 10px var(--accent-3);
+  margin-bottom: 20px;
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(10deg); }
+}
+
+.discount-code {
+  background: var(--bg);
+  border: 2px dashed var(--accent-2);
+  padding: 15px;
+  font-family: 'Press Start 2P';
+  font-size: 14px;
+  color: var(--accent-2);
+  margin: 20px 0;
+  letter-spacing: 3px;
+}
+
+.close-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--accent-1);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  font-family: 'Press Start 2P';
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.close-popup:hover {
+  background: var(--accent-4);
+  transform: rotate(90deg);
 }
 
 /* --- SCROLLBAR --- */
-#catalog::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 10px;
 }
 
-#catalog::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: var(--bg);
 }
 
-#catalog::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: var(--accent-1);
-  border: 2px solid var(--accent-2);
+  border-radius: 5px;
 }
 
-#catalog::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: var(--accent-2);
 }
 
+/* --- PARTICLES --- */
+.particle {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: particleFade 1s forwards;
+}
+
+@keyframes particleFade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translateY(-50px);
+  }
+}
+
 /* --- RESPONSIVE --- */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .hero-logo { font-size: 20px; }
-  .retro-box { padding: 1rem; }
-  .ttt-board { width: 150px; }
-  .ttt-cell { height: 45px; font-size: 16px; }
+  .cam-grid { grid-template-columns: 1fr; padding: 1rem; }
+  .floating-shape { transform: scale(0.7); }
 }
 </style>
 </head>
@@ -437,23 +649,25 @@ body {
 
 <!-- Animated Background Shapes -->
 <div class="shape-container">
-  <div class="floating-shape triangle" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+  <div class="floating-shape triangle" style="top: 10%; left: 5%; animation-delay: 0s;"></div>
   <div class="floating-shape circle" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
   <div class="floating-shape square" style="top: 60%; left: 15%; animation-delay: 2s;"></div>
-  <div class="floating-shape zigzag" style="top: 40%; left: 70%; animation-delay: 3s;"></div>
-  <div class="floating-shape wave" style="top: 80%; left: 50%; animation-delay: 4s;"></div>
-  <div class="floating-shape triangle" style="top: 30%; left: 40%; animation-delay: 5s; border-bottom-color: var(--accent-2);"></div>
-  <div class="floating-shape circle" style="top: 70%; left: 25%; animation-delay: 6s; background: var(--accent-3);"></div>
-  <div class="floating-shape square" style="top: 15%; left: 60%; animation-delay: 7s; background: var(--accent-1);"></div>
-  <div class="floating-shape zigzag" style="top: 50%; left: 5%; animation-delay: 8s;"></div>
-  <div class="floating-shape wave" style="top: 90%; left: 85%; animation-delay: 9s;"></div>
+  <div class="floating-shape zigzag" style="top: 40%; left: 70%; animation-delay: 0.5s;"></div>
+  <div class="floating-shape wave" style="top: 80%; left: 50%; animation-delay: 1.5s;"></div>
+  <div class="floating-shape diamond" style="top: 30%; left: 30%; animation-delay: 2.5s;"></div>
+  <div class="floating-shape hexagon" style="top: 70%; left: 85%; animation-delay: 0.8s;"></div>
+  <div class="floating-shape star" style="top: 50%; left: 10%; animation-delay: 1.8s;"></div>
+  <div class="floating-shape triangle" style="top: 15%; left: 60%; animation-delay: 2.2s; border-bottom-color: var(--accent-2);"></div>
+  <div class="floating-shape circle" style="top: 85%; left: 25%; animation-delay: 0.3s; background: var(--accent-4);"></div>
+  <div class="floating-shape square" style="top: 5%; left: 45%; animation-delay: 1.3s; background: var(--accent-1);"></div>
+  <div class="floating-shape zigzag" style="top: 65%; left: 90%; animation-delay: 2.8s;"></div>
 </div>
 
 <div class="synth-grid"></div>
 
 <div id="hero" onclick="showTTT()">
   <h1 class="hero-logo">SILLY SOCKS</h1>
-  <p style="font-family: 'Press Start 2P'; color: var(--accent-3); font-size: 10px; animation: blink 1s infinite;">>> CLICK TO START <<</p>
+  <p class="blink-text" style="font-family: 'Press Start 2P'; color: var(--accent-3); font-size: 10px;">>> CLICK TO START <<</p>
 </div>
 
 <div id="ttt-screen">
@@ -470,41 +684,71 @@ body {
       <div class="ttt-cell" onclick="move(7)"></div>
       <div class="ttt-cell" onclick="move(8)"></div>
     </div>
+    <p id="game-status" style="font-family: 'Press Start 2P'; font-size: 8px; margin: 15px 0; color: var(--accent-2);"></p>
     <button class="retro-btn" onclick="showGate()">I HAVE A CODE</button>
+    <button class="retro-btn" onclick="resetGame()" style="background: var(--accent-2); margin-left: 10px;">RETRY</button>
   </div>
 </div>
 
 <div id="gate">
   <div class="retro-box">
     <h2 style="font-family: 'Press Start 2P'; color: var(--accent-1); margin-bottom: 20px; font-size: 12px;">SYSTEM LOCKED</h2>
-    <input id="refInput" type="text" placeholder="ENTER CODE..." style="width: 100%; padding: 12px; background: #000; color: #fff; border: 2px solid var(--accent-2); font-family: 'Press Start 2P'; font-size: 8px; margin-bottom: 10px;" />
+    <input id="refInput" type="text" placeholder="ENTER CODE..." style="width: 100%; padding: 12px; background: #000; color: #fff; border: 2px solid var(--accent-2); font-family: 'Press Start 2P'; font-size: 10px; margin-bottom: 15px;" />
     <button class="retro-btn" onclick="checkCode()">ACCESS</button>
+    <button class="retro-btn" onclick="backToTTT()" style="background: var(--accent-3); color: #000; margin-left: 10px;">BACK</button>
   </div>
 </div>
 
 <div id="access-granted">
-  <div class="access-content">
-    <h1 class="access-title">ACCESS GRANTED</h1>
-    <p class="access-message">WELCOME TO THE<br>SOCK ZONE</p>
-    <button class="access-enter-btn" onclick="enterCatalog()">ENTER CATALOG</button>
+  <h1 class="access-title">ACCESS GRANTED</h1>
+  <div style="font-family: 'Press Start 2P'; color: var(--text-muted); font-size: 8px; margin-bottom: 30px;">WELCOME TO THE VAULT</div>
+  <button class="enter-btn" onclick="enterCatalog()">>> ENTER CATALOG <<</button>
+</div>
+
+<div id="discount-popup">
+  <div class="discount-content">
+    <button class="close-popup" onclick="closeDiscount()">×</button>
+    <div class="discount-badge">🎉 SPECIAL OFFER 🎉</div>
+    <h2 style="font-family: 'Press Start 2P'; color: var(--accent-1); font-size: 14px; margin-bottom: 15px;">FIRST TIME BUYER?</h2>
+    <p style="font-size: 12px; margin-bottom: 15px;">Use code below for <strong style="color: var(--accent-3);">20% OFF</strong> your first order!</p>
+    <div class="discount-code">SILLY20</div>
+    <p style="font-size: 10px; color: var(--text-muted);">Valid for 24 hours only!</p>
+    <button class="retro-btn" onclick="closeDiscount()">GOT IT!</button>
   </div>
 </div>
 
 <div id="catalog">
   <header class="cat-header">
     <div style="font-family: 'Press Start 2P'; font-size: 12px; color: var(--accent-1);">SILLY SOCKS</div>
-    <div>
-      <span id="broName" style="font-family: 'Press Start 2P'; font-size: 8px; margin-right: 10px; color: var(--accent-3);">PLAYER</span>
+    <div class="social-links">
+      <a href="https://instagram.com/sillysocks" target="_blank" class="instagram-btn">
+        <span>📷</span> INSTAGRAM
+      </a>
+      <span id="broName" style="font-family: 'Press Start 2P'; font-size: 8px; margin: 0 10px;">PLAYER</span>
       <button class="theme-toggle-btn" onclick="toggleTheme()">[ DAY/NIGHT ]</button>
     </div>
   </header>
+  
+  <div style="padding: 2rem; text-align: center;">
+    <h2 style="font-family: 'Press Start 2P'; color: var(--accent-2); font-size: 16px; margin-bottom: 10px;">🔥 HOT DROPS 🔥</h2>
+    <p style="color: var(--text-muted); font-size: 12px;">Limited Edition • Free Shipping Over $50</p>
+  </div>
+  
   <div class="cam-grid" id="grid"></div>
+  
+  <div style="padding: 2rem; text-align: center;">
+    <a href="https://forms.google.com/your-form-link" target="_blank" class="retro-btn" style="display: inline-block; text-decoration: none; background: var(--accent-3); color: #000;">
+      📝 BULK ORDER FORM
+    </a>
+    <p style="margin-top: 15px; font-size: 10px; color: var(--text-muted);">Need custom designs? Fill out our form!</p>
+  </div>
 </div>
 
 <script>
 // --- LOGIC ---
 function toggleTheme() { 
   document.body.dataset.theme = document.body.dataset.theme === 'light' ? '' : 'light'; 
+  createParticles(event.clientX, event.clientY, 10);
 }
 
 function showTTT() { 
@@ -517,14 +761,22 @@ function showGate() {
   document.getElementById('gate').style.display = 'flex'; 
 }
 
-function showAccessGranted() {
+function backToTTT() {
   document.getElementById('gate').style.display = 'none';
-  document.getElementById('access-granted').style.display = 'flex';
+  document.getElementById('ttt-screen').style.display = 'flex';
 }
 
 function enterCatalog() {
   document.getElementById('access-granted').style.display = 'none';
   document.getElementById('catalog').style.display = 'block';
+  // Show discount popup after entering catalog
+  setTimeout(() => {
+    document.getElementById('discount-popup').style.display = 'flex';
+  }, 1000);
+}
+
+function closeDiscount() {
+  document.getElementById('discount-popup').style.display = 'none';
 }
 
 let board = ["", "", "", "", "", "", "", "", ""];
@@ -533,17 +785,34 @@ let gameActive = true;
 function move(i) {
   if(board[i] === "" && gameActive) {
     board[i] = "X";
-    document.querySelectorAll('.ttt-cell')[i].innerText = "X";
-    document.querySelectorAll('.ttt-cell')[i].style.color = "var(--accent-2)";
+    const cell = document.querySelectorAll('.ttt-cell')[i];
+    cell.innerText = "X";
+    cell.classList.add('x');
     
     if(checkWin("X")) { 
+      document.getElementById('game-status').innerText = "YOU WIN! 🎉";
+      document.getElementById('game-status').style.color = "var(--accent-3)";
       gameActive = false;
-      setTimeout(showGate, 500);
+      setTimeout(() => {
+        document.getElementById('ttt-screen').style.display = 'none'; 
+        document.getElementById('access-granted').style.display = 'flex';
+        // Add confetti effect
+        for(let j = 0; j < 50; j++) {
+          setTimeout(() => {
+            createParticles(
+              Math.random() * window.innerWidth,
+              Math.random() * window.innerHeight / 2,
+              1
+            );
+          }, j * 50);
+        }
+      }, 1000);
     } else if(!board.includes("")) {
-      // Draw - reset board
-      setTimeout(resetBoard, 500);
+      document.getElementById('game-status').innerText = "DRAW! 🤝";
+      gameActive = false;
+      setTimeout(resetGame, 2000);
     } else {
-      setTimeout(bot, 300);
+      setTimeout(bot, 500);
     }
   }
 }
@@ -554,28 +823,17 @@ function bot() {
   if(empty.length > 0) {
     let r = empty[Math.floor(Math.random()*empty.length)];
     board[r] = "O";
-    document.querySelectorAll('.ttt-cell')[r].innerText = "O";
-    document.querySelectorAll('.ttt-cell')[r].style.color = "var(--accent-1)";
+    const cell = document.querySelectorAll('.ttt-cell')[r];
+    cell.innerText = "O";
+    cell.classList.add('o');
     
     if(checkWin("O")) {
+      document.getElementById('game-status').innerText = "BOT WINS! 🤖";
+      document.getElementById('game-status').style.color = "var(--accent-1)";
       gameActive = false;
-      setTimeout(() => {
-        alert("BOT WINS! TRY AGAIN!");
-        resetBoard();
-      }, 300);
-    } else if(!board.includes("")) {
-      setTimeout(resetBoard, 500);
+      setTimeout(resetGame, 2000);
     }
   }
-}
-
-function resetBoard() {
-  board = ["", "", "", "", "", "", "", "", ""];
-  gameActive = true;
-  document.querySelectorAll('.ttt-cell').forEach(cell => {
-    cell.innerText = "";
-    cell.style.color = "white";
-  });
 }
 
 function checkWin(p) { 
@@ -583,49 +841,119 @@ function checkWin(p) {
     .some(a => a.every(i => board[i] === p)); 
 }
 
+function resetGame() {
+  board = ["", "", "", "", "", "", "", "", ""];
+  gameActive = true;
+  document.getElementById('game-status').innerText = "";
+  document.querySelectorAll('.ttt-cell').forEach(cell => {
+    cell.innerText = "";
+    cell.classList.remove('x', 'o');
+  });
+}
+
 function checkCode() {
   let codes = ["tauhid", "songlap", "fouzia", "anhar"];
   if(codes.includes(document.getElementById('refInput').value.toLowerCase())) {
-    showAccessGranted();
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('access-granted').style.display = 'flex';
+    createParticles(window.innerWidth/2, window.innerHeight/2, 30);
   } else {
-    alert("INVALID CODE!");
+    // Shake animation for wrong code
+    const gate = document.getElementById('gate');
+    gate.style.animation = 'shake 0.5s';
+    setTimeout(() => gate.style.animation = '', 500);
   }
 }
 
-// Catalog Data with actual image URLs
-let data = [
-  {n:"Neon Stripe", i:"https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=300&h=200&fit=crop"},
-  {n:"Retro Wave", i:"https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=200&fit=crop"},
-  {n:"Cyber Punk", i:"https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=300&h=200&fit=crop"},
-  {n:"Synth Pop", i:"https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=300&h=200&fit=crop"},
-  {n:"Electric Blue", i:"https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=300&h=200&fit=crop"},
-  {n:"Hot Pink", i:"https://images.unsplash.com/photo-1533038590840-1cde6e668a91?w=300&h=200&fit=crop"},
-  {n:"Geometric", i:"https://images.unsplash.com/photo-1574634534894-89d7576c8259?w=300&h=200&fit=crop"},
-  {n:"Abstract", i:"https://images.unsplash.com/photo-1582219459877-0df9c4f4cc2c?w=300&h=200&fit=crop"},
-  {n:"Classic 80s", i:"https://images.unsplash.com/photo-1551488852-d81a2c5c7813?w=300&h=200&fit=crop"},
-  {n:"Memphis", i:"https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300&h=200&fit=crop"}
-];
-
-let grid = document.getElementById('grid');
-data.forEach(item => {
-  grid.innerHTML += `
-    <div class="cam-card">
-      <img src="${item.i}" class="cam-img" onerror="this.src='https://placehold.co/300x200/ff00ff/ffffff?text=SOCK+IMG'">
-      <div class="cam-name">${item.n}</div>
-      <button class="buy-btn">BUY NOW</button>
-    </div>
-  `;
-});
-
-// Add blink animation for hero text
+// Add shake animation dynamically
 const style = document.createElement('style');
 style.textContent = `
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
   }
 `;
 document.head.appendChild(style);
+
+// Particle effect function
+function createParticles(x, y, count) {
+  const colors = ['var(--accent-1)', 'var(--accent-2)', 'var(--accent-3)', 'var(--accent-4)'];
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = x + 'px';
+    particle.style.top = y + 'px';
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.animationDelay = (Math.random() * 0.5) + 's';
+    
+    // Random direction
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = 50 + Math.random() * 100;
+    const tx = Math.cos(angle) * velocity;
+    const ty = Math.sin(angle) * velocity;
+    
+    particle.animate([
+      { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+    ], {
+      duration: 1000,
+      easing: 'ease-out'
+    });
+    
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), 1000);
+  }
+}
+
+// Product data with real images
+let data = [
+  {n:"Neon Stripe", i:"https://images.unsplash.com/photo-1586350977771-b3b0abd50f82?w=400&h=300&fit=crop", p:"$14.99"},
+  {n:"Retro Wave", i:"https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&h=300&fit=crop", p:"$16.99"},
+  {n:"Cyber Punk", i:"https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&h=300&fit=crop", p:"$15.99"},
+  {n:"Synth Pop", i:"https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=400&h=300&fit=crop", p:"$14.99"},
+  {n:"Geometric", i:"https://images.unsplash.com/photo-1582738411706-bfc8e691d1c2?w=400&h=300&fit=crop", p:"$17.99"},
+  {n:"Pixel Art", i:"https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?w=400&h=300&fit=crop", p:"$15.99"},
+  {n:"Vaporwave", i:"https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=300&fit=crop", p:"$18.99"},
+  {n:"Glitch", i:"https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=300&fit=crop", p:"$16.99"},
+  {n:"Memphis", i:"https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=300&fit=crop", p:"$15.99"},
+  {n:"Arcade", i:"https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&h=300&fit=crop", p:"$19.99"}
+];
+
+let grid = document.getElementById('grid');
+data.forEach((item, index) => {
+  grid.innerHTML += `
+    <div class="cam-card" style="animation-delay: ${index * 0.1}s">
+      <img src="${item.i}" class="cam-img" alt="${item.n}" onerror="this.src='https://placehold.co/300x200?text=SOCK+IMAGE'">
+      <div class="cam-name">${item.n}</div>
+      <div class="cam-price">${item.p}</div>
+      <a href="https://forms.google.com/your-form-link?product=${encodeURIComponent(item.n)}" target="_blank" style="text-decoration: none;">
+        <button class="buy-btn">BUY NOW</button>
+      </a>
+    </div>`;
+});
+
+// Add hover sound effect simulation (visual feedback)
+document.querySelectorAll('.cam-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    createParticles(
+      card.getBoundingClientRect().left + card.offsetWidth/2,
+      card.getBoundingClientRect().top + card.offsetHeight/2,
+      5
+    );
+  });
+});
+
+// Auto-generate random particles in background
+setInterval(() => {
+  if(Math.random() > 0.7) {
+    createParticles(
+      Math.random() * window.innerWidth,
+      Math.random() * window.innerHeight,
+      3
+    );
+  }
+}, 2000);
 </script>
 </body>
 </html>
